@@ -4,6 +4,12 @@ name: Deploy Documentation
 on:
   workflow_dispatch:
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 env:
   PUBLIC_SIMICS_PKGS_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/84f08bc7-5f21-455e-b43f-befa5b2c57ba/simics-7-packages-2025-33-linux64.ispm"
   PUBLIC_SIMICS_ISPM_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/84f08bc7-5f21-455e-b43f-befa5b2c57ba/intel-simics-package-manager-1.16.0-linux64.tar.gz"
@@ -25,8 +31,6 @@ jobs:
         run: |
           sudo apt-get -y update && \
           sudo apt-get -y install curl
-
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Install SIMICS (External)
         run: |

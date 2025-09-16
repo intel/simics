@@ -50,6 +50,9 @@ jobs:
         run: |
           ispm packages --install-bundle "${HOME}/simics/simics.ispm" \
               --non-interactive --trust-insecure-packages
+          # remove ISIM packages ; we don't want them
+          rm -rf ${HOME}/simics/simics-docea-base-*
+          rm -rf ${HOME}/simics/simics-qsp-isim-*
 
       - name: Generate SIMICS Documentation
         run: |

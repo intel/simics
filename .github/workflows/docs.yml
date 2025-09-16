@@ -1,0 +1,75 @@
+---
+name: Deploy Documentation
+
+on:
+  workflow_dispatch:
+
+env:
+  PUBLIC_SIMICS_PKGS_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/84f08bc7-5f21-455e-b43f-befa5b2c57ba/simics-7-packages-2025-33-linux64.ispm"
+  PUBLIC_SIMICS_ISPM_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/84f08bc7-5f21-455e-b43f-befa5b2c57ba/intel-simics-package-manager-1.16.0-linux64.tar.gz"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Add ISPM to PATH
+        run: |
+          echo "${HOME}/simics/ispm/" >> "${GITHUB_PATH}"
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get -y update && \
+          sudo apt-get -y install curl
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install SIMICS (External)
+        run: |
+          mkdir -p "${HOME}/simics/ispm/" && \
+          curl --noproxy '*.intel.com' -L -o "${HOME}/simics/ispm.tar.gz" \
+              "${{ env.PUBLIC_SIMICS_ISPM_URL }}" && \
+          curl --noproxy '*.intel.com' -L -o "${HOME}/simics/simics.ispm" \
+              "${{ env.PUBLIC_SIMICS_PKGS_URL }}" && \
+          tar -C "${HOME}/simics/ispm" --strip-components=1 \
+              -xvf "${HOME}/simics/ispm.tar.gz"
+
+      - name: Set up SIMICS Install Directory
+        run: |
+          ispm settings install-dir "${HOME}/simics"
+
+      - name: Install SIMICS Packages
+        run: |
+          ispm packages --install-bundle "${HOME}/simics/simics.ispm" \
+              --non-interactive --trust-insecure-packages
+
+      - name: Generate SIMICS Documentation
+        run: |
+          mkdir "$(pwd)/project"
+          ispm projects "$(pwd)/project" --create --ignore-existing-files --non-interactive
+          "$(pwd)/project/documentation" -o docs/ --dont-open --project "$(pwd)/project"
+
+      # TODO: Still needed?
+      # - name: Set Documentation Permissions
+      #   run: |
+      #     sudo chown -R "$USER:$USER" docs
+      #     sudo chmod -R 755 docs
+      #     sudo chmod -c -R +rX docs/ | while read -r line; do
+      #       echo "::warning title=Invalid file permissions automatically fixed::$line"
+      #     done
+
+      - name: Setup Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        with:
+          path: "./docs/"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

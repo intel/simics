@@ -58,8 +58,9 @@ jobs:
         run: |
           mkdir "$(pwd)/project"
           ispm projects "$(pwd)/project" --create --ignore-existing-files --non-interactive
-          "$(pwd)/project/documentation" -o docs/ --dont-open --project "$(pwd)/project" \
+          "$(pwd)/project/documentation" -o docs/docs --dont-open --project "$(pwd)/project" \
               --front "Documentation built $(date -I)"
+          echo '<meta http-equiv="refresh" content="0; url=https://intel.github.io/simics/docs">' > docs/index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0

@@ -57,15 +57,6 @@ jobs:
           ispm projects "$(pwd)/project" --create --ignore-existing-files --non-interactive
           "$(pwd)/project/documentation" -o docs/ --dont-open --project "$(pwd)/project"
 
-      # TODO: Still needed?
-      # - name: Set Documentation Permissions
-      #   run: |
-      #     sudo chown -R "$USER:$USER" docs
-      #     sudo chmod -R 755 docs
-      #     sudo chmod -c -R +rX docs/ | while read -r line; do
-      #       echo "::warning title=Invalid file permissions automatically fixed::$line"
-      #     done
-
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 

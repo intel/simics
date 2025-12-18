@@ -11,8 +11,8 @@ permissions:
   id-token: write
 
 env:
-  PUBLIC_SIMICS_PKGS_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/84f08bc7-5f21-455e-b43f-befa5b2c57ba/simics-7-packages-2025-33-linux64.ispm"
-  PUBLIC_SIMICS_ISPM_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/84f08bc7-5f21-455e-b43f-befa5b2c57ba/intel-simics-package-manager-1.16.0-linux64.tar.gz"
+  PUBLIC_SIMICS_PKGS_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/b9edaa91-4c18-4758-b8e2-b6e709270a4c/simics-7-packages-2025-51-linux64.ispm"
+  PUBLIC_SIMICS_ISPM_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/b9edaa91-4c18-4758-b8e2-b6e709270a4c/intel-simics-package-manager-1.16.4-linux64.tar.gz"
 
 jobs:
   deploy:

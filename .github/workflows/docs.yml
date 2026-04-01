@@ -11,7 +11,6 @@ permissions:
   id-token: write
 
 env:
-  PUBLIC_SIMICS_PKGS_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/b9edaa91-4c18-4758-b8e2-b6e709270a4c/simics-7-packages-2025-51-linux64.ispm"
   PUBLIC_SIMICS_ISPM_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/b9edaa91-4c18-4758-b8e2-b6e709270a4c/intel-simics-package-manager-1.16.4-linux64.tar.gz"
 
 jobs:
@@ -33,8 +32,6 @@ jobs:
           mkdir -p "${HOME}/simics/ispm/"
           curl --noproxy '*.intel.com' -L -o "${HOME}/simics/ispm.tar.gz" \
               "${{ env.PUBLIC_SIMICS_ISPM_URL }}"
-          curl --noproxy '*.intel.com' -L -o "${HOME}/simics/simics.ispm" \
-              "${{ env.PUBLIC_SIMICS_PKGS_URL }}"
           tar -C "${HOME}/simics/ispm" --strip-components=1 \
               -xvf "${HOME}/simics/ispm.tar.gz"
 
@@ -42,24 +39,18 @@ jobs:
         run: |
           echo "${HOME}/simics/ispm/" >> "${GITHUB_PATH}"
 
-      - name: Set up ISPM Install Directory
-        run: |
-          ispm settings install-dir "${HOME}/simics"
-
       - name: Install Simics Packages
         run: |
-          ispm packages --install-bundle "${HOME}/simics/simics.ispm" \
-              --non-interactive --trust-insecure-packages
-          # remove ISIM packages ; we don't want them
-          rm -rf ${HOME}/simics/simics-docea-base-*
-          rm -rf ${HOME}/simics/simics-qsp-isim-*
+          # Install from local manifest
+          ispm platforms --no-config-file --install-dir install \
+              --platform-repo . --package-repo https://apis.intel.com \
+              --manifest qsp-x86-public-7 --non-interactive --create-project proj 
 
       - name: Generate Simics Documentation
+        working-directory: proj
         run: |
-          mkdir "$(pwd)/project"
-          ispm projects "$(pwd)/project" --create --ignore-existing-files --non-interactive
-          "$(pwd)/project/documentation" -o docs/docs --dont-open --project "$(pwd)/project" \
-              --front "Documentation built $(date -I)"
+          ./documentation -o docs/docs --dont-open \
+          --front "Documentation built $(date -I)"
           echo '<meta http-equiv="refresh" content="0; url=https://intel.github.io/simics/docs">' > docs/index.html
 
       - name: Setup Pages
@@ -68,7 +59,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
-          path: "./docs/"
+          path: "./proj/docs/"
 
       - name: Deploy to GitHub Pages
         id: deployment

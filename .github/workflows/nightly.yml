@@ -1,0 +1,12 @@
+---
+name: Nightly Test Simics
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+    with:
+      package_repo: https://apis-sandbox.intel.com
+      require_signed: false

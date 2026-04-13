@@ -1,0 +1,89 @@
+---
+name: Test Simics
+
+on:
+  workflow_call:
+    inputs:
+      package_repo:
+        type: string
+        default: https://apis.intel.com
+      require_signed:
+        type: boolean
+        default: true
+
+jobs:
+  simics_test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Install Curl
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install curl
+
+      - name: Download ISPM
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p "${HOME}/simics/ispm/"
+          curl --noproxy '*.intel.com' -L -o "${HOME}/simics/ispm.tar.gz" \
+              "${{ vars.PUBLIC_SIMICS_ISPM_URL }}"
+          tar -C "${HOME}/simics/ispm" --strip-components=1 \
+              -xvf "${HOME}/simics/ispm.tar.gz"
+
+      - name: Download ISPM
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\simics\ispm"
+          Invoke-WebRequest -Uri "${{ vars.PUBLIC_SIMICS_ISPM_URL_WINDOWS }}" `
+              -OutFile "$env:USERPROFILE\simics\ispm.zip"
+          Expand-Archive -Path "$env:USERPROFILE\simics\ispm.zip" `
+              -DestinationPath "$env:USERPROFILE\simics\ispm_extracted" -Force
+          $items = Get-ChildItem "$env:USERPROFILE\simics\ispm_extracted"
+          if ($items.Count -eq 1 -and $items[0].PSIsContainer) {
+              Get-ChildItem $items[0].FullName | Move-Item -Destination "$env:USERPROFILE\simics\ispm"
+          } else {
+              $items | Move-Item -Destination "$env:USERPROFILE\simics\ispm"
+          }
+
+      - name: Add ISPM to PATH
+        if: runner.os == 'Linux'
+        run: |
+          echo "${HOME}/simics/ispm/" >> "${GITHUB_PATH}"
+
+      - name: Add ISPM to PATH
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          "$env:USERPROFILE\simics\ispm" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+
+      - name: Check out repo
+        uses: actions/checkout@v6
+
+      - name: Install Simics Packages
+        run: |
+          ispm platforms --no-config-file --install-dir install --verbose \
+              --platform-repo . --package-repo ${{ inputs.package_repo }} \
+              --manifest qsp-x86-public-7 --non-interactive \
+              ${{ inputs.require_signed && '' || '--trust-insecure-packages' }} \
+              --create-project proj
+
+      - name: Test Yocto Boot
+        if: runner.os == 'Linux'
+        working-directory: proj
+        run: |
+          ./simics --batch-mode --stop-on-errors --deprecations-as-errors \
+              ../test/boot.simics
+
+      - name: Test Yocto Boot
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: proj
+        run: |
+          .\simics.bat --batch-mode --stop-on-errors --deprecations-as-errors `
+              ..\test\boot.simics

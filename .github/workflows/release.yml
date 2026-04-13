@@ -1,0 +1,9 @@
+---
+name: Test Simics Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml

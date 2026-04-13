@@ -1,0 +1,2 @@
+load-target qsp-x86-v2/yocto-linux
+bp.console_string.run-until object = qsp_v2.serconsole0 string = "~$" timeout-rt=600

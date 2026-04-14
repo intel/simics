@@ -10,9 +10,6 @@ permissions:
   pages: write
   id-token: write
 
-env:
-  PUBLIC_SIMICS_ISPM_URL: "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/b9edaa91-4c18-4758-b8e2-b6e709270a4c/intel-simics-package-manager-1.16.4-linux64.tar.gz"
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -31,7 +28,7 @@ jobs:
         run: |
           mkdir -p "${HOME}/simics/ispm/"
           curl --noproxy '*.intel.com' -L -o "${HOME}/simics/ispm.tar.gz" \
-              "${{ env.PUBLIC_SIMICS_ISPM_URL }}"
+              "${{ vars.PUBLIC_SIMICS_ISPM_URL }}"
           tar -C "${HOME}/simics/ispm" --strip-components=1 \
               -xvf "${HOME}/simics/ispm.tar.gz"
 

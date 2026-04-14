@@ -39,6 +39,9 @@ jobs:
         run: |
           echo "${HOME}/simics/ispm/" >> "${GITHUB_PATH}"
 
+      - name: Check out repo
+        uses: actions/checkout@v6
+        
       - name: Install Simics Packages
         run: |
           # Install from local manifest

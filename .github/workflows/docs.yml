@@ -29,8 +29,7 @@ jobs:
           mkdir -p "${HOME}/simics/ispm/"
           curl --noproxy '*.intel.com' -L -o "${HOME}/simics/ispm.tar.gz" \
               "${{ vars.PUBLIC_SIMICS_ISPM_URL }}"
-          tar -C "${HOME}/simics/ispm" --strip-components=1 \
-              -xvf "${HOME}/simics/ispm.tar.gz"
+          tar -C "${HOME}/simics/ispm" -xvf "${HOME}/simics/ispm.tar.gz"
 
       - name: Add ISPM to PATH
         run: |

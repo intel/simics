@@ -32,8 +32,7 @@ jobs:
           mkdir -p "${HOME}/simics/ispm/"
           curl --noproxy '*.intel.com' -L -o "${HOME}/simics/ispm.tar.gz" \
               "${{ vars.PUBLIC_SIMICS_ISPM_URL }}"
-          tar -C "${HOME}/simics/ispm" --strip-components=1 \
-              -xvf "${HOME}/simics/ispm.tar.gz"
+          tar -C "${HOME}/simics/ispm" -xvf "${HOME}/simics/ispm.tar.gz"
 
       - name: Download ISPM
         if: runner.os == 'Windows'
@@ -41,15 +40,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\simics\ispm"
           Invoke-WebRequest -Uri "${{ vars.PUBLIC_SIMICS_ISPM_URL_WINDOWS }}" `
-              -OutFile "$env:USERPROFILE\simics\ispm.zip"
-          Expand-Archive -Path "$env:USERPROFILE\simics\ispm.zip" `
-              -DestinationPath "$env:USERPROFILE\simics\ispm_extracted" -Force
-          $items = Get-ChildItem "$env:USERPROFILE\simics\ispm_extracted"
-          if ($items.Count -eq 1 -and $items[0].PSIsContainer) {
-              Get-ChildItem $items[0].FullName | Move-Item -Destination "$env:USERPROFILE\simics\ispm"
-          } else {
-              $items | Move-Item -Destination "$env:USERPROFILE\simics\ispm"
-          }
+              -OutFile "$env:USERPROFILE\simics\ispm\ispm.exe"
 
       - name: Add ISPM to PATH
         if: runner.os == 'Linux'

@@ -37,6 +37,10 @@ jobs:
 
       - name: Check out repo
         uses: actions/checkout@v6
+
+      - name: Display disk space
+        run: |
+          df -h
         
       - name: Install Simics Packages
         run: |

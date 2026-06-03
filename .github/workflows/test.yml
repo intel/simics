@@ -63,11 +63,7 @@ jobs:
         
       - name: Install Simics Packages
         run: |
-          ispm platforms --no-config-file --install-dir install --verbose \
-              --platform-repo . --package-repo ${{ inputs.package_repo }} \
-              --manifest qsp-x86-public-7 --non-interactive \
-              ${{ inputs.require_signed && '' || '--trust-insecure-packages' }} \
-              --create-project proj
+          ispm platforms --no-config-file --install-dir install --verbose --platform-repo . --package-repo ${{ inputs.package_repo }} --manifest qsp-x86-public-7 --non-interactive ${{ inputs.require_signed && '' || '--trust-insecure-packages' }} --create-project proj
 
       - name: Test Yocto Boot
         if: runner.os == 'Linux'

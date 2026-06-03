@@ -56,6 +56,11 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v6
 
+      - name: Display disk space
+        if: runner.os == 'Linux'
+        run: |
+          df -h
+        
       - name: Install Simics Packages
         run: |
           ispm platforms --no-config-file --install-dir install --verbose \

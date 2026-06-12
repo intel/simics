@@ -69,7 +69,7 @@ jobs:
         if: runner.os == 'Linux'
         working-directory: proj
         run: |
-          ./simics --batch-mode --stop-on-errors --deprecations-as-errors \
+          ./simics --batch-mode --stop-on-error --deprecations-as-errors \
               ../test/boot.simics
 
       - name: Test Yocto Boot
@@ -77,5 +77,5 @@ jobs:
         shell: pwsh
         working-directory: proj
         run: |
-          .\simics.bat --batch-mode --stop-on-errors --deprecations-as-errors `
+          .\simics.bat --batch-mode --stop-on-error --deprecations-as-errors `
               ..\test\boot.simics

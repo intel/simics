@@ -47,7 +47,8 @@ jobs:
           # Install from local manifest
           ispm platforms --no-config-file --install-dir install --verbose \
               --platform-repo . --package-repo https://apis.intel.com \
-              --manifest qsp-x86-public-7 --non-interactive --create-project proj 
+              --manifest qsp-x86-public-7 --non-interactive \
+              --create-project proj --trust-insecure-packages
 
       - name: Generate Simics Documentation
         working-directory: proj

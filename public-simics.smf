@@ -3,8 +3,8 @@
 manifest_format: 2
 name: Public Intel® Simics® Simulator
 group: qsp-x86-public-7
-version: 2026ww35.5
-date: 2026-08-28
+version: 2026ww36.2
+date: 2026-09-01
 description: |-
   Intel® Simics® Public Release
   =============================
@@ -33,4 +33,4 @@ packages:
   6010:
     version: 7.0.0-pre.13
   8112:
-    version: 7.29.0
+    version: 7.30.0
